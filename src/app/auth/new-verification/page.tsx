@@ -1,5 +1,5 @@
 import VerificationForm from "@/components/auth/verification-form";
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 const NewVerificationPage = () => {
   return (
-    <div>
+    <Suspense>
       <VerificationForm />
-    </div>
+    </Suspense>
   );
 };
 
