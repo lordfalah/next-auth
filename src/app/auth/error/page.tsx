@@ -4,7 +4,7 @@ import CardWrapper from "@/components/auth/card-wrapper";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
 enum TErrorAuth {
   Configuration = "Configuration",
@@ -52,13 +52,15 @@ const ErrorAuth = () => {
       backButtonHref="login"
       classNameHeader="text-center"
     >
-      {errMsg && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>{errMsg.error}</AlertTitle>
-          <AlertDescription>{errMsg.message}</AlertDescription>
-        </Alert>
-      )}
+      <Suspense>
+        {errMsg && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>{errMsg.error}</AlertTitle>
+            <AlertDescription>{errMsg.message}</AlertDescription>
+          </Alert>
+        )}
+      </Suspense>
     </CardWrapper>
   );
 };
