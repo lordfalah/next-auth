@@ -2,17 +2,17 @@ import NextAuth from "next-auth";
 import prisma from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import authConfig from "@/auth.config";
+import type { Adapter } from "next-auth/adapters";
 import { getUserByEmail, getUserById } from "@/data/users";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as Adapter,
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
   },
   events: {
     async linkAccount({ user }) {
-      console.log({ user });
       await prisma.user.update({
         where: {
           id: user.id,
