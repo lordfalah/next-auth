@@ -3,7 +3,6 @@
 import { signIn } from "@/auth";
 import { generateTokenByEmail } from "@/data/token";
 import { getUserByEmail } from "@/data/users";
-import { getVerificationTokenByEmail } from "@/data/verification-token";
 import { SignupFormSchema, TSignupFormSchema } from "@/lib/definitions";
 import { sendEmailVerification } from "@/lib/mail";
 import { DEFFAULT_LOGIN_REDIRECT } from "@/routes";
