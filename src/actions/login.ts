@@ -37,15 +37,10 @@ export const login = async (values: TSignupFormSchema) => {
     }
 
     if (!existingUser.emailVerified) {
-      const generateVerificationEmail = await generateTokenByEmail(
-        existingUser.email,
-      );
+      const existingToken = await generateTokenByEmail(existingUser.email);
 
-      if (generateVerificationEmail) {
-        await sendEmailVerification(
-          generateVerificationEmail.email,
-          generateVerificationEmail.token,
-        );
+      if (existingToken) {
+        await sendEmailVerification(existingToken.email, existingToken.token);
       }
 
       return {

@@ -28,6 +28,7 @@ import { useState, useTransition } from "react";
 
 import { DEFFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -96,7 +97,17 @@ const LoginForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  <Button
+                    asChild
+                    type="button"
+                    variant={"link"}
+                    className="px-0"
+                  >
+                    <Link href={"/auth/reset"}>Forgot Password ?</Link>
+                  </Button>
+                </div>
                 <FormControl>
                   <Input
                     disabled={isPending}

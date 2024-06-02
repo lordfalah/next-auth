@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { useForm } from "react-hook-form";
-import { RegisterFormSchema, TRegisterFormSchema } from "@/lib/definitions";
+import { TNewResetPasswordSchema, NewPasswordSchema } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -18,35 +18,45 @@ import {
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Google from "@/icons/google";
-import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
+import { newResetPassword } from "@/actions/new-reset-password";
+import { useSearchParams } from "next/navigation";
 
-const RegisterForm = () => {
+const NewResetForm = () => {
   const [isPending, startTransition] = useTransition();
   const [errMsg, setErrMsg] = useState("");
   const [succMsg, setSuccMsg] = useState("");
-  const form = useForm<TRegisterFormSchema>({
-    resolver: zodResolver(RegisterFormSchema),
+  const params = useSearchParams();
+  const token = params.get("token");
+
+  const form = useForm<TNewResetPasswordSchema>({
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
-      name: "",
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = (payloads: TRegisterFormSchema) => {
+  const onSubmit = (payloads: TNewResetPasswordSchema) => {
     setErrMsg("");
     setSuccMsg("");
+
     startTransition(async () => {
-      const { errors, message, status } = await register(payloads);
+      if (!token) return setErrMsg("token not found!");
+
+      const { errors, message, status } = await newResetPassword(
+        payloads,
+        token,
+      );
 
       if (status) {
+        // success login
         setSuccMsg(message);
       } else {
+        // fail login
         setErrMsg(message);
         Object.keys(errors).forEach((key) => {
-          return form.setError(key as any, {
+          return form.setError(key as keyof typeof errors, {
             type: "server",
             message: errors[key as keyof typeof errors],
           });
@@ -57,25 +67,26 @@ const RegisterForm = () => {
 
   return (
     <CardWrapper
+      cardTitle="Auth"
       backButtonHref="Login"
-      backButtonLabel="Already have account?"
-      cardDescription="Enter your information to create an account"
-      cardTitle="Register"
+      backButtonLabel="Back to"
+      cardDescription="Enter a new password"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="name"
+            name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>New Password</FormLabel>
                 <FormControl>
                   <Input
                     disabled={isPending}
-                    placeholder="falhhalla"
+                    placeholder="********"
                     {...field}
-                    type="text"
+                    type="password"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -85,34 +96,17 @@ const RegisterForm = () => {
 
           <FormField
             control={form.control}
-            name="email"
+            name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input
                     disabled={isPending}
-                    placeholder="m@example.com"
-                    {...field}
-                    type="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled={isPending}
-                    placeholder="*******"
+                    placeholder="********"
                     {...field}
                     type="password"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -139,16 +133,8 @@ const RegisterForm = () => {
               {isPending ? (
                 <Loader className="animate-spin" />
               ) : (
-                "Create an Account"
+                "Reset Password"
               )}
-            </Button>
-            <Button
-              disabled={isPending}
-              variant="outline"
-              className="flex h-auto w-full gap-x-3.5"
-            >
-              <Google className="h-8 w-8 " />
-              Login with Google
             </Button>
           </div>
         </form>
@@ -157,4 +143,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default NewResetForm;

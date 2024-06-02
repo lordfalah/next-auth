@@ -59,10 +59,20 @@ model Account {
 
 model VerificationToken {
   id      String   @id @default(uuid())
-  token   String
+  token   String   @unique
   email   String
   expires DateTime
 
   @@unique([token, email])
   @@map("verificationtokens")
+}
+
+model ResetPassword {
+  id      String   @id @default(uuid())
+  token   String   @unique
+  email   String
+  expires DateTime
+
+  @@unique([token, email])
+  @@map("resetPasswords")
 }

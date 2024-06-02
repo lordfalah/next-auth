@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { useForm } from "react-hook-form";
-import { RegisterFormSchema, TRegisterFormSchema } from "@/lib/definitions";
+import { TResetPasswordSchema, ResetPasswordSchema } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -18,71 +18,47 @@ import {
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Google from "@/icons/google";
-import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
+import { resetPassword } from "@/actions/reset-password";
 
-const RegisterForm = () => {
+const ResetForm = () => {
   const [isPending, startTransition] = useTransition();
   const [errMsg, setErrMsg] = useState("");
   const [succMsg, setSuccMsg] = useState("");
-  const form = useForm<TRegisterFormSchema>({
-    resolver: zodResolver(RegisterFormSchema),
+  const form = useForm<TResetPasswordSchema>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      name: "",
       email: "",
-      password: "",
     },
   });
 
-  const onSubmit = (payloads: TRegisterFormSchema) => {
+  const onSubmit = (payloads: TResetPasswordSchema) => {
     setErrMsg("");
     setSuccMsg("");
+
     startTransition(async () => {
-      const { errors, message, status } = await register(payloads);
+      const { error, message, status } = await resetPassword(payloads);
 
       if (status) {
+        // success login
         setSuccMsg(message);
       } else {
+        // fail login
         setErrMsg(message);
-        Object.keys(errors).forEach((key) => {
-          return form.setError(key as any, {
-            type: "server",
-            message: errors[key as keyof typeof errors],
-          });
-        });
+        form.setError("email", { message: error ? error : "", type: "server" });
       }
     });
   };
 
   return (
     <CardWrapper
+      cardTitle="Reset Password"
       backButtonHref="Login"
-      backButtonLabel="Already have account?"
-      cardDescription="Enter your information to create an account"
-      cardTitle="Register"
+      backButtonLabel="Back to"
+      cardDescription="Enter your email below to reset password to your account"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled={isPending}
-                    placeholder="falhhalla"
-                    {...field}
-                    type="text"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="email"
@@ -92,27 +68,10 @@ const RegisterForm = () => {
                 <FormControl>
                   <Input
                     disabled={isPending}
-                    placeholder="m@example.com"
+                    placeholder="@gmail.com"
                     {...field}
                     type="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    disabled={isPending}
-                    placeholder="*******"
-                    {...field}
-                    type="password"
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -139,16 +98,8 @@ const RegisterForm = () => {
               {isPending ? (
                 <Loader className="animate-spin" />
               ) : (
-                "Create an Account"
+                "Reset Password"
               )}
-            </Button>
-            <Button
-              disabled={isPending}
-              variant="outline"
-              className="flex h-auto w-full gap-x-3.5"
-            >
-              <Google className="h-8 w-8 " />
-              Login with Google
             </Button>
           </div>
         </form>
@@ -157,4 +108,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default ResetForm;

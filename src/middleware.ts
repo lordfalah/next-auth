@@ -5,7 +5,7 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoute,
-} from "./routes";
+} from "@/routes";
 import { NextResponse } from "next/server";
 const { auth: middleware } = NextAuth(authConfig);
 

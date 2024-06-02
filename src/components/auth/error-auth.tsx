@@ -4,16 +4,16 @@ import CardWrapper from "@/components/auth/card-wrapper";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React, { Suspense } from "react";
+import React from "react";
 
-enum TErrorAuth {
+export enum TErrorAuth {
   Configuration = "Configuration",
   AccessDenied = "AccessDenied",
   Verification = "Verification",
   Default = "Default",
 }
 
-const errors = [
+export const errorsAuth = [
   {
     error: "Configuration",
     message:
@@ -41,27 +41,25 @@ const ErrorAuth = () => {
   const queryError = params.get("error") as TErrorAuth;
 
   const errMsg = queryError
-    ? errors.find(({ error }) => error === queryError)
+    ? errorsAuth.find(({ error }) => error === queryError)
     : null;
 
   return (
-    <Suspense>
-      <CardWrapper
-        cardTitle="Error"
-        cardDescription="Something when Error"
-        backButtonLabel="back to login"
-        backButtonHref="login"
-        classNameHeader="text-center"
-      >
-        {errMsg && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{errMsg.error}</AlertTitle>
-            <AlertDescription>{errMsg.message}</AlertDescription>
-          </Alert>
-        )}
-      </CardWrapper>
-    </Suspense>
+    <CardWrapper
+      cardTitle="Error"
+      cardDescription="Something when Error"
+      backButtonLabel="back to login"
+      backButtonHref="login"
+      classNameHeader="text-center"
+    >
+      {errMsg && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>{errMsg.error}</AlertTitle>
+          <AlertDescription>{errMsg.message}</AlertDescription>
+        </Alert>
+      )}
+    </CardWrapper>
   );
 };
 
