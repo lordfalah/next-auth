@@ -25,7 +25,6 @@ import { Button } from "@/components/ui/button";
 import Google from "@/icons/google";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
-
 import { DEFFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signIn } from "next-auth/react";
 import Link from "next/link";

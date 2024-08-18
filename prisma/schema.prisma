@@ -20,17 +20,18 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  role          UserRole  @default(USER)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String                 @unique
+  password              String?
+  emailVerified         DateTime?
+  image                 String?
+  accounts              Account[]
+  role                  UserRole               @default(USER)
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
   @@map("users")
 }
@@ -75,4 +76,22 @@ model ResetPassword {
 
   @@unique([token, email])
   @@map("resetPasswords")
+}
+
+model TwoFactorToken {
+  id      String   @id @default(uuid())
+  token   String   @unique
+  email   String
+  expires DateTime
+
+  @@unique([token, email])
+  @@map("TwoFactorTokens")
+}
+
+model TwoFactorConfirmation {
+  id     String @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("TwoFactorConfirmations")
 }
